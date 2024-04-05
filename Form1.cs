@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Space_Invaders
 {
@@ -12,15 +13,25 @@ namespace Space_Invaders
             InitializeComponent();
         }
 
-        Button bullet = new Button();
-        Button bullet2 = new Button();
+        static Button bullet = new Button();
+        static Button bullet2 = new Button();
+        static Button button;
 
         static int numberOfEnemies = 6, numberOfKills = 0, level = 0, score = 0, counter = 0, speed = 5;
+        static bool left_IsPressed = false, right_IsPressed = false, BulletisRemoved = true, BulletisRemoved2 = true;
 
-        bool left_IsPressed = false, right_IsPressed = false, BulletisRemoved = true, BulletisRemoved2 = true;
+
 
         public void Form1_Load(object sender, EventArgs e)
         {
+            button = new Button();
+            button.Text = "restart";
+            button.Size = new Size(75, 50);
+            button.Left = this.ClientSize.Width / 2 - button.Width / 2;
+            button.Top = this.ClientSize.Height / 2 - button.Height / 2;
+
+            button.Click += gameover;
+
             moveLilGuy.Start();
             moveEnemies.Start();
             moveBullet2.Start();
@@ -47,17 +58,17 @@ namespace Space_Invaders
                 enemy.Size = new Size(40, 15);
                 enemy.BackColor = Color.Black;
 
-                    if (i == x*(numberOfEnemies / (level + 1)) + 1)
-                    {
-                        top = top + 40;
-                        left = 30;
-                        x++;
-                    }
+                if (i == x * (numberOfEnemies / (level + 1)) + 1)
+                {
+                    top = top + 40;
+                    left = 30;
+                    x++;
+                }
 
-                    else
-                    {
-                        left = left + 80;
-                    }
+                else
+                {
+                    left = left + 80;
+                }
 
                 enemy.Top = top;
                 enemy.Left = left;
@@ -65,6 +76,14 @@ namespace Space_Invaders
                 Controls.Add(enemy);
                 enemy.BringToFront();
             }
+        }
+
+        public static void gameover(object o, EventArgs e)
+        {
+            Process p = Process.GetCurrentProcess();
+
+            Process.Start(System.IO.Directory.GetCurrentDirectory() + "\\Space_Invaders.exe");
+            p.Kill();
         }
 
         private void lilguy_previewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -98,10 +117,10 @@ namespace Space_Invaders
                     }
 
                     break;
+
+ 
             }
         }
-
-
 
         public void lilguy_Click(object sender, EventArgs e)
         {
@@ -219,10 +238,11 @@ namespace Space_Invaders
                     moveBullet.Stop();
                     moveEnemies.Stop();
                     moveBullet2.Stop();
-                    
+
                     lilguy.Enabled = false;
 
-                    MessageBox.Show("Game Over. Enemies reached you.");
+                    this.Controls.Add(button);
+                    button.BringToFront();
 
                     break;
                 }
@@ -236,10 +256,10 @@ namespace Space_Invaders
             if (BulletisRemoved2)
             {
                 Random random = new Random();
-                int random_int = random.Next(1, 7);
+                int random_int = random.Next(0, this.Size.Width);
 
                 bullet2.Top = 20;
-                bullet2.Left = 30 * random_int;
+                bullet2.Left = random_int;
 
                 Controls.Add(bullet2);
                 bullet2.BringToFront();
@@ -253,10 +273,11 @@ namespace Space_Invaders
                 moveBullet.Stop();
                 moveEnemies.Stop();
                 moveBullet2.Stop();
-                
+
                 lilguy.Enabled = false;
 
-                MessageBox.Show("Game over. You were shot.");
+                this.Controls.Add(button);
+                button.BringToFront();
             }
 
             if (bullet2.Bottom >= 500)
