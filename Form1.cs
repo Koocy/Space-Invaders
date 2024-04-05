@@ -82,7 +82,7 @@ namespace Space_Invaders
         {
             Process p = Process.GetCurrentProcess();
 
-            Process.Start(System.IO.Directory.GetCurrentDirectory() + "\\Space_Invaders.exe");
+            Process.Start(System.IO.Directory.GetCurrentDirectory() + "\\WindowsFormsApplication1.exe");
             p.Kill();
         }
 
